@@ -21,7 +21,7 @@ func main() {
 	redirectUri := os.Getenv("AUTH_REDIRECT_URI")
 	host := os.Getenv("HOST")
 
-	sc := scalekit.NewScalekit(
+	sc := scalekit.NewScalekitClient(
 		environmentUrl,
 		clientId,
 		clientSecret,

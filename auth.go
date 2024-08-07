@@ -71,6 +71,24 @@ func (a *Auth) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err_description, http.StatusBadRequest)
 		return
 	}
+	if idpInitiatedLogin := r.URL.Query().Get("idp_initiated_login"); idpInitiatedLogin != "" {
+		claims, err := a.sc.GetIdpInitiatedLoginClaims(idpInitiatedLogin)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		options := scalekit.AuthorizationUrlOptions{
+			ConnectionId:   claims.ConnectionID,
+			OrganizationId: claims.OrganizationID,
+			LoginHint:      claims.LoginHint,
+		}
+		authUrl, err := a.sc.GetAuthorizationUrl(a.redirectUrl, options)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, authUrl.String(), http.StatusFound)
+	}
 	if code == "" {
 		http.Error(w, "code not found", http.StatusBadRequest)
 		return

@@ -88,6 +88,7 @@ func (a *Auth) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		http.Redirect(w, r, authUrl.String(), http.StatusFound)
+		return
 	}
 	if code == "" {
 		http.Error(w, "code not found", http.StatusBadRequest)
